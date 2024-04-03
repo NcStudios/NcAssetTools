@@ -8,8 +8,8 @@
 
 namespace nc::asset
 {
-constexpr auto version3 = 3ull;
-constexpr auto currentVersion = version3;
+constexpr auto version4 = 4ull;
+constexpr auto currentVersion = version4;
 
 /** @brief Identifiers for asset blobs in .nca files. */
 struct MagicNumber

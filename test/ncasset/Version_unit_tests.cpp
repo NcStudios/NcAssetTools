@@ -1,9 +1,9 @@
 #include "NcaHeader.h"
 #include "gtest/gtest.h"
 
-TEST(VersionTests, IsVersionSupported_version3_returnsTrue)
+TEST(VersionTests, IsVersionSupported_version4_returnsTrue)
 {
-    EXPECT_TRUE(nc::asset::IsVersionSupported(nc::asset::version3));
+    EXPECT_TRUE(nc::asset::IsVersionSupported(nc::asset::version4));
 }
 
 TEST(VersionTests, IsVersionSupported_currentVersion_returnsTrue)

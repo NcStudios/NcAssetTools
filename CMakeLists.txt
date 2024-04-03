@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project("nc-tools" VERSION "3.2.0" LANGUAGES CXX)
+project("nc-tools" VERSION "4.0.0" LANGUAGES CXX)
 
 if(${PROJECT_SOURCE_DIR} EQUAL ${PROJECT_BINARY_DIR})
     message(FATAL_ERROR "Don't be a fool, out-of-source build with your tool.")
