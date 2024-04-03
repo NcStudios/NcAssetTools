@@ -8,6 +8,7 @@
 #include "utility/Log.h"
 
 #include "ncasset/Assets.h"
+#include "ncasset/NcaHeader.h"
 
 #include "fmt/format.h"
 #include "ncutility/Hash.h"
@@ -36,12 +37,6 @@ auto OpenOutFile(const std::filesystem::path& outPath) -> std::ofstream
 
     return outFile;
 }
-
-auto GetAssetId(const std::filesystem::path& outPath) -> size_t
-{
-    const auto ncaName = outPath.filename();
-    return nc::utility::Fnv1a(ncaName.string());
-}
 } // anonymous namespace
 
 namespace nc::convert
@@ -58,37 +53,36 @@ Builder::~Builder() noexcept = default;
 auto Builder::Build(asset::AssetType type, const Target& target) -> bool
 {
     auto outFile = ::OpenOutFile(target.destinationPath);
-    const auto assetId = ::GetAssetId(target.destinationPath);
     switch (type)
     {
         case asset::AssetType::AudioClip:
         {
             const auto asset = m_audioConverter->ImportAudioClip(target.sourcePath);
-            convert::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, asset::currentVersion);
             return true;
         }
         case asset::AssetType::CubeMap:
         {
             const auto asset = m_textureConverter->ImportCubeMap(target.sourcePath);
-            convert::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, asset::currentVersion);
             return true;
         }
         case asset::AssetType::ConcaveCollider:
         {
             const auto asset = m_geometryConverter->ImportConcaveCollider(target.sourcePath);
-            convert::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, asset::currentVersion);
             return true;
         }
         case asset::AssetType::HullCollider:
         {
             const auto asset = m_geometryConverter->ImportHullCollider(target.sourcePath);
-            convert::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, asset::currentVersion);
             return true;
         }
         case asset::AssetType::Mesh:
         {
             const auto asset = m_geometryConverter->ImportMesh(target.sourcePath, target.subResourceName);
-            convert::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, asset::currentVersion);
             return true;
         }
         case asset::AssetType::Shader:
@@ -98,13 +92,13 @@ auto Builder::Build(asset::AssetType type, const Target& target) -> bool
         case asset::AssetType::SkeletalAnimation:
         {
             const auto asset = m_geometryConverter->ImportSkeletalAnimation(target.sourcePath, target.subResourceName);
-            convert::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, asset::currentVersion);
             return true;
         }
         case asset::AssetType::Texture:
         {
             const auto asset = m_textureConverter->ImportTexture(target.sourcePath);
-            convert::Serialize(outFile, asset, assetId);
+            convert::Serialize(outFile, asset, asset::currentVersion);
             return true;
         }
         case asset::AssetType::Font:

@@ -27,7 +27,7 @@ an asset blob, the layout of which is determined by the asset type.
 |--------------|---------|--------------|------
 | magic number | string  | 4            | non-null-terminated string identifying the asset type
 | compression  | string  | 4            | NONE until supported
-| asset id     | u64     | 8            | 
+| version      | u64     | 8            | major version of nc-convert used to create the asset
 | blob size    | u64     | 8            | size of the asset blob
 | asset blob   | -       | blob size    | unique layout for each asset type
 

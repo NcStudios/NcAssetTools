@@ -1,11 +1,11 @@
 cmake_minimum_required(VERSION 3.20)
-project("nc-tools" VERSION "3.1.0" LANGUAGES CXX)
+project("nc-tools" VERSION "3.2.0" LANGUAGES CXX)
 
 if(${PROJECT_SOURCE_DIR} EQUAL ${PROJECT_BINARY_DIR})
     message(FATAL_ERROR "Don't be a fool, out-of-source build with your tool.")
 endif()
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 option(NC_TOOLS_BUILD_CONVERTER "Build nc-convert executable" ON)

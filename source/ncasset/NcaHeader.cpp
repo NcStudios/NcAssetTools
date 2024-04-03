@@ -3,6 +3,8 @@
 #include "ncutility/NcError.h"
 #include "ncutility/BinarySerialization.h"
 
+#include <ranges>
+
 namespace nc::asset
 {
 auto GetAssetType(const NcaHeader& header) -> AssetType
@@ -40,12 +42,18 @@ auto GetAssetType(const NcaHeader& header) -> AssetType
     throw NcError("Unknown magic number in NcaHeader: ", header.magicNumber);
 }
 
+auto IsVersionSupported(uint64_t version) noexcept -> bool
+{
+    static constexpr auto supportedVersions = {nc::asset::version3};
+    return std::ranges::contains(supportedVersions, version);
+}
+
 void Serialize(std::ostream& stream, const NcaHeader& header)
 {
     constexpr char defaultAlgo[5] = "NONE"; // not yet supported
     stream.write(header.magicNumber, 4);
     stream.write(defaultAlgo, 4);
-    nc::serialize::Serialize(stream, header.assetId);
+    nc::serialize::Serialize(stream, header.version);
     nc::serialize::Serialize(stream, header.size);
 }
 
@@ -55,7 +63,7 @@ void Deserialize(std::istream& stream, NcaHeader& header)
     stream.read(header.compressionAlgorithm, 4);
     header.magicNumber[4] = '\0';
     header.compressionAlgorithm[4] = '\0';
-    nc::serialize::Deserialize(stream, header.assetId);
+    nc::serialize::Deserialize(stream, header.version);
     nc::serialize::Deserialize(stream, header.size);
 }
 } // namespace nc::asset

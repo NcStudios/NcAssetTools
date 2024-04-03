@@ -5,6 +5,7 @@
 #include "ncasset/Assets.h"
 
 #include "ncmath/Math.h"
+#include "ncutility/NcError.h"
 
 #include <algorithm>
 #include <sstream>
@@ -49,7 +50,7 @@ bool Equals(const DirectX::XMMATRIX& lhs, const DirectX::XMMATRIX& rhs)
 
 TEST(SerializationTest, HullCollider_roundTrip_succeeds)
 {
-    constexpr auto assetId = 1234ull;
+    constexpr auto version = nc::asset::currentVersion;
     const auto expectedAsset = nc::asset::HullCollider{
         .extents = nc::Vector3{1.2f, 3.4f, 5.6f},
         .maxExtent = 42.42f,
@@ -60,11 +61,11 @@ TEST(SerializationTest, HullCollider_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::convert::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, version);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeHullCollider(stream);
 
     EXPECT_STREQ("HULL", actualHeader.magicNumber);
-    EXPECT_EQ(assetId, actualHeader.assetId);
+    EXPECT_EQ(version, actualHeader.version);
     EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
@@ -78,7 +79,7 @@ TEST(SerializationTest, HullCollider_roundTrip_succeeds)
 
 TEST(SerializationTest, ConcaveCollider_roundTrip_succeeds)
 {
-    constexpr auto assetId = 1234ull;
+    constexpr auto version = nc::asset::currentVersion;
     const auto expectedAsset = nc::asset::ConcaveCollider{
         .extents = nc::Vector3{-1.1f, 2.2f, -3.3f},
         .maxExtent = 123.321f,
@@ -89,11 +90,11 @@ TEST(SerializationTest, ConcaveCollider_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::convert::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, version);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeConcaveCollider(stream);
 
     EXPECT_STREQ("CONC", actualHeader.magicNumber);
-    EXPECT_EQ(assetId, actualHeader.assetId);
+    EXPECT_EQ(version, actualHeader.version);
     EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
@@ -113,7 +114,7 @@ TEST(SerializationTest, ConcaveCollider_roundTrip_succeeds)
 
 TEST(SerializationTest, Mesh_hasBones_roundTrip_succeeds)
 {
-    constexpr auto assetId = 1234ull;
+    constexpr auto version = nc::asset::currentVersion;
     auto expectedAsset = nc::asset::Mesh{
         .extents = nc::Vector3{-5.0f, 4.22f, 10.010101f},
         .maxExtent = 10.010101f,
@@ -184,11 +185,11 @@ TEST(SerializationTest, Mesh_hasBones_roundTrip_succeeds)
     expectedAsset.bonesData.value().boneMapping.emplace("Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0Bone0", 0);
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::convert::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, version);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeMesh(stream);
 
     EXPECT_STREQ("MESH", actualHeader.magicNumber);
-    EXPECT_EQ(assetId, actualHeader.assetId);
+    EXPECT_EQ(version, actualHeader.version);
     EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
@@ -221,7 +222,7 @@ TEST(SerializationTest, Mesh_hasBones_roundTrip_succeeds)
 
 TEST(SerializationTest, Mesh_noBones_roundTrip_succeeds)
 {
-    constexpr auto assetId = 1234ull;
+    constexpr auto version = nc::asset::currentVersion;
     const auto expectedAsset = nc::asset::Mesh{
         .extents = nc::Vector3{-5.0f, 4.22f, 10.010101f},
         .maxExtent = 10.010101f,
@@ -255,11 +256,11 @@ TEST(SerializationTest, Mesh_noBones_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::convert::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, version);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeMesh(stream);
 
     EXPECT_STREQ("MESH", actualHeader.magicNumber);
-    EXPECT_EQ(assetId, actualHeader.assetId);
+    EXPECT_EQ(version, actualHeader.version);
     EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
@@ -284,7 +285,7 @@ TEST(SerializationTest, Mesh_noBones_roundTrip_succeeds)
 
 TEST(SerializationTest, Texture_roundTrip_succeeds)
 {
-    constexpr auto assetId = 1234ull;
+    constexpr auto version = nc::asset::currentVersion;
     const auto expectedAsset = nc::asset::Texture{
         .width = 2, .height = 2,
         .pixelData = std::vector<unsigned char>{
@@ -294,11 +295,11 @@ TEST(SerializationTest, Texture_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::convert::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, version);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeTexture(stream);
 
     EXPECT_STREQ("TEXT", actualHeader.magicNumber);
-    EXPECT_EQ(assetId, actualHeader.assetId);
+    EXPECT_EQ(version, actualHeader.version);
     EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
@@ -313,7 +314,7 @@ TEST(SerializationTest, Texture_roundTrip_succeeds)
 
 TEST(SerializationTest, AudioClip_roundTrip_succeeds)
 {
-    constexpr auto assetId = 1234ull;
+    constexpr auto version = nc::asset::currentVersion;
     const auto expectedAsset = nc::asset::AudioClip{
         .samplesPerChannel = 4ull,
         .leftChannel = std::vector<double>{0.0f, 0.5f, 1.0f, 0.5f},
@@ -321,11 +322,11 @@ TEST(SerializationTest, AudioClip_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::convert::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, version);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeAudioClip(stream);
 
     EXPECT_STREQ("CLIP", actualHeader.magicNumber);
-    EXPECT_EQ(assetId, actualHeader.assetId);
+    EXPECT_EQ(version, actualHeader.version);
     EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
@@ -342,7 +343,7 @@ TEST(SerializationTest, AudioClip_roundTrip_succeeds)
 
 TEST(SerializationTest, CubeMap_roundTrip_succeeds)
 {
-    constexpr auto assetId = 1234ull;
+    constexpr auto version = nc::asset::currentVersion;
     const auto expectedAsset = nc::asset::CubeMap{
         .faceSideLength = 1,
         .pixelData = std::vector<unsigned char>{
@@ -356,11 +357,11 @@ TEST(SerializationTest, CubeMap_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::convert::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, version);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeCubeMap(stream);
 
     EXPECT_STREQ("CUBE", actualHeader.magicNumber);
-    EXPECT_EQ(assetId, actualHeader.assetId);
+    EXPECT_EQ(version, actualHeader.version);
     EXPECT_EQ(nc::convert::GetBlobSize(expectedAsset), actualHeader.size);
     EXPECT_STREQ("NONE", actualHeader.compressionAlgorithm);
 
@@ -374,7 +375,7 @@ TEST(SerializationTest, CubeMap_roundTrip_succeeds)
 
 TEST(SerializationTest, SkeletalAnimation_roundTrip_succeeds)
 {
-    constexpr auto assetId = 1234ull;
+    constexpr auto version = nc::asset::currentVersion;
 
     const auto firstBoneFrame = nc::asset::SkeletalAnimationFrames
     {
@@ -438,7 +439,7 @@ TEST(SerializationTest, SkeletalAnimation_roundTrip_succeeds)
     };
 
     auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
-    nc::convert::Serialize(stream, expectedAsset, assetId);
+    nc::convert::Serialize(stream, expectedAsset, version);
     const auto [actualHeader, actualAsset] = nc::asset::DeserializeSkeletalAnimation(stream);
 
     EXPECT_EQ(actualAsset.name, std::string{"Test"});
@@ -475,4 +476,67 @@ TEST(SerializationTest, SkeletalAnimation_roundTrip_succeeds)
     EXPECT_FLOAT_EQ(secondBoneFrames.scaleFrames.at(2).scale.x, 5.2f);
     EXPECT_FLOAT_EQ(secondBoneFrames.scaleFrames.at(2).scale.y, 5.2f);
     EXPECT_FLOAT_EQ(secondBoneFrames.scaleFrames.at(2).scale.z, 5.2f);
+}
+
+TEST(SerializationTest, DeserializeAudioClip_unsupportedVersion_throws)
+{
+    const auto dummyAsset = nc::asset::AudioClip{};
+    const auto unsupportedVersion = 1ull;
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::convert::Serialize(stream, dummyAsset, unsupportedVersion);
+    EXPECT_THROW(nc::asset::DeserializeAudioClip(stream), nc::NcError);
+}
+
+TEST(SerializationTest, DeserializeConcaveCollider_unsupportedVersion_throws)
+{
+    const auto dummyAsset = nc::asset::ConcaveCollider{};
+    const auto unsupportedVersion = 1ull;
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::convert::Serialize(stream, dummyAsset, unsupportedVersion);
+    EXPECT_THROW(nc::asset::DeserializeConcaveCollider(stream), nc::NcError);
+}
+
+TEST(SerializationTest, DeserializeCubeMap_unsupportedVersion_throws)
+{
+    const auto dummyAsset = nc::asset::CubeMap{};
+    const auto unsupportedVersion = 1ull;
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::convert::Serialize(stream, dummyAsset, unsupportedVersion);
+    EXPECT_THROW(nc::asset::DeserializeCubeMap(stream), nc::NcError);
+}
+
+TEST(SerializationTest, DeserializeHullCollider_unsupportedVersion_throws)
+{
+    const auto dummyAsset = nc::asset::HullCollider{};
+    const auto unsupportedVersion = 1ull;
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::convert::Serialize(stream, dummyAsset, unsupportedVersion);
+    EXPECT_THROW(nc::asset::DeserializeHullCollider(stream), nc::NcError);
+}
+
+TEST(SerializationTest, DeserializeMesh_unsupportedVersion_throws)
+{
+    const auto dummyAsset = nc::asset::Mesh{};
+    const auto unsupportedVersion = 1ull;
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::convert::Serialize(stream, dummyAsset, unsupportedVersion);
+    EXPECT_THROW(nc::asset::DeserializeMesh(stream), nc::NcError);
+}
+
+TEST(SerializationTest, DeserializeSkeletalAnimation_unsupportedVersion_throws)
+{
+    const auto dummyAsset = nc::asset::SkeletalAnimation{};
+    const auto unsupportedVersion = 1ull;
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::convert::Serialize(stream, dummyAsset, unsupportedVersion);
+    EXPECT_THROW(nc::asset::DeserializeSkeletalAnimation(stream), nc::NcError);
+}
+
+TEST(SerializationTest, DeserializeTexture_unsupportedVersion_throws)
+{
+    const auto dummyAsset = nc::asset::Texture{};
+    const auto unsupportedVersion = 1ull;
+    auto stream = std::stringstream{std::ios::in | std::ios::out | std::ios::binary};
+    nc::convert::Serialize(stream, dummyAsset, unsupportedVersion);
+    EXPECT_THROW(nc::asset::DeserializeTexture(stream), nc::NcError);
 }
