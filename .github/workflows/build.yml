@@ -31,7 +31,7 @@ jobs:
           - name: Linux
             os: ubuntu-22.04
             generator: "Unix Makefiles"
-            env: "CXX=/usr/bin/g++-12"
+            env: "CXX=/usr/bin/g++-13"
             definitions: "-DCMAKE_BUILD_TYPE=Debug"
             artifactName: "nc-convert-ubuntu22.04-x64"
 
