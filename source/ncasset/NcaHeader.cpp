@@ -44,7 +44,7 @@ auto GetAssetType(const NcaHeader& header) -> AssetType
 
 auto IsVersionSupported(uint64_t version) noexcept -> bool
 {
-    static constexpr auto supportedVersions = {nc::asset::version3};
+    static constexpr auto supportedVersions = {nc::asset::version4};
     return std::ranges::contains(supportedVersions, version);
 }
 
