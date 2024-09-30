@@ -27,6 +27,14 @@ void ValidateHeader(const nc::asset::NcaHeader& header, std::string_view expecte
             header.compressionAlgorithm
         ));
     }
+
+    if (!nc::asset::IsVersionSupported(header.version))
+    {
+        throw nc::NcError(fmt::format(
+            "Unsupported asset version: '{}'",
+            header.version
+        ));
+    }
 }
 
 template<class T>

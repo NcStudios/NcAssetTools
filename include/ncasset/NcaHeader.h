@@ -2,12 +2,15 @@
 
 #include "AssetType.h"
 
-#include <cstddef>
+#include <cstdint>
 #include <iosfwd>
 #include <string_view>
 
 namespace nc::asset
 {
+constexpr auto version4 = 4ull;
+constexpr auto currentVersion = version4;
+
 /** @brief Identifiers for asset blobs in .nca files. */
 struct MagicNumber
 {
@@ -37,14 +40,17 @@ struct NcaHeader
     char compressionAlgorithm[5] = "NONE";
 
     /** @brief The Fnv1a hash of the asset's friendly name. */
-    size_t assetId = 0;
+    uint64_t version = currentVersion;
 
     /** @brief Size in bytes of the asset blob following this header. */
-    size_t size = 0;
+    uint64_t size = 0;
 };
 
 /** @brief Get the AssetType for an NcaHeader. */
 auto GetAssetType(const NcaHeader& header) -> AssetType;
+
+/** @brief Check if deserialization is supported for an Nca version. */
+auto IsVersionSupported(uint64_t version) noexcept -> bool;
 
 /** @brief Serialize an NcaHeader to a stream. */
 void Serialize(std::ostream& stream, const NcaHeader& header);

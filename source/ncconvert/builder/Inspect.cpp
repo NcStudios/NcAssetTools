@@ -12,7 +12,7 @@ R"(File {}
 Header
   magic number {}
   compression  {}
-  id           {}
+  version      {}
   size         {})";
 
 constexpr auto audioClipTemplate =
@@ -64,7 +64,12 @@ void Inspect(const std::filesystem::path& ncaPath)
 {
     const auto header = asset::ImportNcaHeader(ncaPath);
     const auto type = GetAssetType(header);
-    LOG(headerTemplate, ncaPath.string(), header.magicNumber, header.compressionAlgorithm, header.assetId, header.size);
+    LOG(headerTemplate, ncaPath.string(), header.magicNumber, header.compressionAlgorithm, header.version, header.size);
+    if (!asset::IsVersionSupported(header.version))
+    {
+        LOG("Unsupported asset version {}", header.version);
+        return;
+    }
 
     switch (type)
     {
